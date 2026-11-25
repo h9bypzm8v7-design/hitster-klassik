@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hitster Klassik</title>
+<style>
+  :root { --gold:#c9a227; --bg:#0b0b0f; --ink:#f3efe4; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font:17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { min-height:100%; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:32px 20px; text-align:center; gap:28px; }
+  .staff { width:min(320px,80vw); height:46px;
+    background:repeating-linear-gradient(to bottom, var(--gold) 0 1.5px, transparent 1.5px 11px); opacity:.85; }
+  h1 { margin:0; font-size:15px; letter-spacing:.4em; color:var(--gold); font-weight:600; }
+  p { margin:0; max-width:30ch; color:#c9c3b4; }
+  .player { position:relative; width:min(360px,92vw); height:80px; border-radius:14px; overflow:hidden; background:#181820; }
+  .player iframe { position:absolute; inset:0; width:100%; height:80px; border:0; }
+  /* deckt Cover, Titel und Interpret ab – nur der Play-Knopf rechts bleibt frei */
+  .cover { position:absolute; top:0; bottom:0; left:0; right:68px; background:#181820;
+    display:flex; align-items:center; justify-content:flex-start; padding-left:18px; gap:12px;
+    font-size:15px; color:#ddd6c4; pointer-events:auto; }
+  .cover b { color:var(--gold); font-size:22px; }
+  .hint { font-size:14px; color:#8f8a7e; }
+  .err { color:#f0a0a0; }
+</style>
+</head>
+<body>
+<main>
+  <div class="staff" aria-hidden="true"></div>
+  <h1>KLASSIK</h1>
+  <div id="app"></div>
+  <div class="staff" aria-hidden="true"></div>
+</main>
+<script>
+{
+  const app = document.getElementById('app');
+  const read = () => {
+    const h = location.hash.replace('#', '');
+    const q = new URLSearchParams(location.search).get('t') || '';
+    const id = (h || q).trim();
+    return /^[A-Za-z0-9]{22}$/.test(id) ? id : null;
+  };
+  const show = () => {
+    const id = read();
+    app.textContent = '';
+    if (!id) {
+      const p = document.createElement('p');
+      p.textContent = 'Scanne eine Klassik-Karte mit der Kamera deines Handys – die Musik startet hier, ohne den Titel zu verraten.';
+      app.appendChild(p);
+      return;
+    }
+    const box = document.createElement('div');
+    box.className = 'player';
+    const f = document.createElement('iframe');
+    f.src = 'https://open.spotify.com/embed/track/' + id + '?utm_source=generator&theme=0';
+    f.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+    f.loading = 'eager';
+    const c = document.createElement('div');
+    c.className = 'cover';
+    c.innerHTML = '<b>♪</b><span>Play drücken&nbsp;→</span>';
+    box.append(f, c);
+    const hint = document.createElement('p');
+    hint.className = 'hint';
+    hint.textContent = 'Je nach Spotify-Anmeldung im Browser läuft eine Vorschau (ca. 30 Sek.) oder der ganze Track.';
+    app.append(box, hint);
+  };
+  window.addEventListener('hashchange', show);
+  show();
+}
+</script>
+</body>
+</html>
